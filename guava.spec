@@ -1,6 +1,6 @@
 Name:           guava
 Version:        05
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Google Core Libraries for Java
 
 Group:          Development/Libraries
@@ -9,6 +9,8 @@ URL:            http://code.google.com/p/guava-libraries
 #svn export http://guava-libraries.googlecode.com/svn/tags/release05/ guava-r05
 #tar jcf guava-r05.tar.bz2 guava-r05/
 Source0:        %{name}-r%{version}.tar.bz2
+#Remove parent definition which doesn't really to be used
+Patch0:        %{name}-pom.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch: noarch
@@ -44,6 +46,8 @@ API documentation for %{name}.
 
 %prep
 %setup -q -n %{name}-r%{version}
+
+%patch0 -p0
 
 sed -i "s/jsr305.jar/jsr-305.jar/" build.xml
 
@@ -96,6 +100,9 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
+* Wed Jul 14 2010 Hui wang <huwang@redhat.com> - 05-4
+- Patch pom
+
 * Fri Jun 18 2010 Hui Wang <huwang@redhat.com> - 05-3
 - Fixed jar name in install section
 - Removed spaces in description

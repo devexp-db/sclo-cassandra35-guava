@@ -1,0 +1,14 @@
+--- pom.xml.orig	2010-06-02 01:36:53.000000000 +0800
++++ pom.xml	2010-07-14 11:55:46.000000000 +0800
+@@ -2,11 +2,6 @@
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+-  <parent>
+-    <groupId>com.google</groupId>
+-    <artifactId>google</artifactId>
+-    <version>5</version>
+-  </parent>
+   <groupId>com.google.guava</groupId>
+   <artifactId>guava</artifactId>
+   <version>r05</version>
