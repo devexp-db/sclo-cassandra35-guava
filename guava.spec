@@ -1,6 +1,6 @@
 Name:           guava
 Version:        05
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Google Core Libraries for Java
 
 Group:          Development/Libraries
@@ -100,6 +100,9 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
+* Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 05-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Wed Jul 14 2010 Hui wang <huwang@redhat.com> - 05-4
 - Patch pom
 
