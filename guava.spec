@@ -1,6 +1,6 @@
 Name:           guava
-Version:        05
-Release:        5%{?dist}
+Version:        09
+Release:        1%{?dist}
 Summary:        Google Core Libraries for Java
 
 Group:          Development/Libraries
@@ -11,21 +11,18 @@ URL:            http://code.google.com/p/guava-libraries
 Source0:        %{name}-r%{version}.tar.bz2
 #Remove parent definition which doesn't really to be used
 Patch0:        %{name}-pom.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch: noarch
 
-BuildRequires:  ant
-BuildRequires:  java-devel >= 0:1.6.0
+BuildRequires:  maven
+BuildRequires:  maven-surefire-provider-junit4
+BuildRequires:  java-devel >= 0:1.7.0
 BuildRequires:  jpackage-utils
-BuildRequires:  jsr-305
+BuildRequires:  jsr-305 >= 0.7.20090319svn
 BuildRequires:  ant-nodeps
 
 Requires:       java
 Requires:       jpackage-utils
-
-Requires(post):       jpackage-utils
-Requires(postun):     jpackage-utils
 
 %description
 Guava is a suite of core and expanded libraries that include 
@@ -47,59 +44,51 @@ API documentation for %{name}.
 %prep
 %setup -q -n %{name}-r%{version}
 
-%patch0 -p0
+rm -r lib/* gwt-*
 
-sed -i "s/jsr305.jar/jsr-305.jar/" build.xml
+%patch0 -p1
+
 
 %build
-rm lib/* -r
-build-jar-repository -s -p lib jsr-305
 
-ant -Drelease=%{version} -Djava5home=%{_jvmdir} dist
+mvn-rpmbuild install javadoc:aggregate
 
 %install
-rm -rf %{buildroot}
 
 # jars
-install -Dpm 644 build/dist/guava-r%{version}/%{name}-r%{version}.jar   %{buildroot}%{_javadir}/%{name}-%{version}.jar
-
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; \
-    do ln -sf ${jar} `echo $jar| sed "s|-%{version}||g"`; done)
-
-%add_to_maven_depmap com.google.guava %{name} %{version} JPP %{name}
-%add_to_maven_depmap com.google.collections google-collections 1.0 JPP %{name}
+install -Dpm 644 target/guava-r%{version}.jar   %{buildroot}%{_javadir}/%{name}.jar
 
 # poms
 install -Dpm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
 
+
+%add_maven_depmap JPP-%{name}.pom %{name}.jar -a "com.google.collections:google-collections"
+
 # javadoc
-install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}-%{version}
-cp -pr build/javadoc/* %{buildroot}%{_javadocdir}/%{name}-%{version}/
-ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name}
-rm -rf build/javadoc/*
+install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
+cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
 
-%post
-%update_maven_depmap
+%pre javadoc
+# workaround for rpm bug 646523 (can be removed in F-18)
+[ $1 -gt 1 ] && [ -L %{_javadocdir}/%{name} ] && \
+rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
 
-%postun
-%update_maven_depmap
-
-%clean
-rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root,-)
 %doc COPYING README README.maven
 %{_javadir}/*
 %{_mavenpomdir}/*
 %{_mavendepmapfragdir}/*
 
 %files javadoc
-%defattr(-,root,root,-)
-%{_javadocdir}/%{name}-%{version}
 %{_javadocdir}/%{name}
 
 %changelog
+* Mon Sep 12 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 09-1
+- Update to 09
+- Packaging fixes
+- Build with maven
+
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 05-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
