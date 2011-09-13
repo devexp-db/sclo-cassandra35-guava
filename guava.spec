@@ -18,7 +18,7 @@ BuildRequires:  maven
 BuildRequires:  maven-surefire-provider-junit4
 BuildRequires:  java-devel >= 0:1.7.0
 BuildRequires:  jpackage-utils
-BuildRequires:  jsr-305 >= 0.7.20090319svn
+BuildRequires:  jsr-305 >= 0-0.7.20090319svn
 BuildRequires:  ant-nodeps
 
 Requires:       java
