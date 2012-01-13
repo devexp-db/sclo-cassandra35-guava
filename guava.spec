@@ -1,6 +1,6 @@
 Name:           guava
 Version:        09
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Google Core Libraries for Java
 
 Group:          Development/Libraries
@@ -84,6 +84,9 @@ rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
 %{_javadocdir}/%{name}
 
 %changelog
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 09-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Mon Sep 12 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 09-1
 - Update to 09
 - Packaging fixes
