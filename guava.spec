@@ -1,28 +1,40 @@
-Name:           guava
-Version:        09
-Release:        2%{?dist}
-Summary:        Google Core Libraries for Java
+Name:          guava
+Version:       11.0.2
+Release:       1%{?dist}
+Summary:       Google Core Libraries for Java
 
-Group:          Development/Libraries
-License:        ASL 2.0 
-URL:            http://code.google.com/p/guava-libraries
-#svn export http://guava-libraries.googlecode.com/svn/tags/release05/ guava-r05
-#tar jcf guava-r05.tar.bz2 guava-r05/
-Source0:        %{name}-r%{version}.tar.bz2
-#Remove parent definition which doesn't really to be used
-Patch0:        %{name}-pom.patch
+Group:         Development/Libraries
+License:       ASL 2.0 
+URL:           http://code.google.com/p/guava-libraries
+# git clone https://code.google.com/p/guava-libraries/
+# cd guava-libraries && git archive --format=tar --prefix=guava-11.0.2/ v11.0.2 | xz > guava-11.0.2.tar.xz
+Source0:       %{name}-%{version}.tar.xz
+Patch0:        guava-11.0.2-remove-animal-sniffer.patch
 
-BuildArch: noarch
+BuildRequires: java-devel >= 0:1.7.0
+BuildRequires: jpackage-utils
+BuildRequires: sonatype-oss-parent
 
-BuildRequires:  maven
-BuildRequires:  maven-surefire-provider-junit4
-BuildRequires:  java-devel >= 0:1.7.0
-BuildRequires:  jpackage-utils
-BuildRequires:  jsr-305 >= 0-0.7.20090319svn
-BuildRequires:  ant-nodeps
+BuildRequires: maven
+BuildRequires: maven-compiler-plugin
+BuildRequires: maven-dependency-plugin
+BuildRequires: maven-enforcer-plugin
+BuildRequires: maven-install-plugin
+BuildRequires: maven-jar-plugin
+BuildRequires: maven-resources-plugin
+BuildRequires: maven-surefire-provider-junit4
+#BuildRequires: animal-sniffer
+#BuildRequires: mojo-signatures
 
-Requires:       java
-Requires:       jpackage-utils
+BuildRequires: jsr-305 >= 0-0.6.20090319svn
+BuildRequires: ant-nodeps
+BuildRequires: jdiff
+
+Requires:      jsr-305
+
+Requires:      java
+Requires:      jpackage-utils
+BuildArch:     noarch
 
 %description
 Guava is a suite of core and expanded libraries that include 
@@ -40,14 +52,18 @@ Requires:       jpackage-utils
 %description javadoc
 API documentation for %{name}.
 
-
 %prep
-%setup -q -n %{name}-r%{version}
+%setup -q -n %{name}-%{version}
+find . -name '*.jar' -delete
 
-rm -r lib/* gwt-*
+# guava/lib/jdiff.jar
+ln -sf $(build-classpath jdiff) guava/lib/jdiff.jar
 
-%patch0 -p1
+%patch0 -p0
 
+sed -i "s|<module>guava-gwt</module>|<!--module>guava-gwt</module-->|" pom.xml
+sed -i "s|<module>guava-testlib</module>|<!--module>guava-testlib</module-->|" pom.xml
+sed -i "s|<module>guava-tests</module>|<!--module>guava-tests</module-->|" pom.xml
 
 %build
 
@@ -56,13 +72,18 @@ mvn-rpmbuild install javadoc:aggregate
 %install
 
 # jars
-install -Dpm 644 target/guava-r%{version}.jar   %{buildroot}%{_javadir}/%{name}.jar
+mkdir -p %{buildroot}%{_javadir}
+install -pm 644 %{name}/target/%{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}.jar
+install -pm 644 %{name}-bootstrap/target/%{name}-bootstrap-%{version}.jar %{buildroot}%{_javadir}/guava-bootstrap.jar
 
 # poms
-install -Dpm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
-
-
+mkdir -p %{buildroot}%{_mavenpomdir}
+install -pm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}-parent.pom
+%add_maven_depmap JPP-%{name}-parent.pom
+install -pm 644 %{name}/pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
 %add_maven_depmap JPP-%{name}.pom %{name}.jar -a "com.google.collections:google-collections"
+install -pm 644 %{name}-bootstrap/pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}-bootstrap.pom
+%add_maven_depmap JPP-%{name}-bootstrap.pom %{name}-bootstrap.jar
 
 # javadoc
 install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
@@ -73,17 +94,20 @@ cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
 [ $1 -gt 1 ] && [ -L %{_javadocdir}/%{name} ] && \
 rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
 
-
 %files
-%doc COPYING README README.maven
-%{_javadir}/*
-%{_mavenpomdir}/*
-%{_mavendepmapfragdir}/*
+%doc AUTHORS CONTRIBUTORS COPYING README*
+%{_javadir}/%{name}*.jar
+%{_mavenpomdir}/JPP-%{name}*.pom
+%{_mavendepmapfragdir}/%{name}
 
 %files javadoc
 %{_javadocdir}/%{name}
+%doc COPYING
 
 %changelog
+* Sat Apr 28 2012 gil cattaneo <puntogil@libero.it> 11.0.2-1
+- Update to 11.0.2
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 09-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
