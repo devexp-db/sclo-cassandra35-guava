@@ -1,6 +1,6 @@
 Name:          guava
 Version:       11.0.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Google Core Libraries for Java
 
 Group:         Development/Libraries
@@ -105,6 +105,9 @@ rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
 %doc COPYING
 
 %changelog
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 11.0.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Sat Apr 28 2012 gil cattaneo <puntogil@libero.it> 11.0.2-1
 - Update to 11.0.2
 
