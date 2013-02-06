@@ -1,6 +1,6 @@
 Name:          guava
 Version:       13.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Google Core Libraries for Java
 
 Group:         Development/Libraries
@@ -14,7 +14,7 @@ BuildRequires: java-devel >= 0:1.7.0
 BuildRequires: jpackage-utils
 BuildRequires: sonatype-oss-parent
 
-BuildRequires: maven
+BuildRequires: maven-local
 BuildRequires: maven-compiler-plugin
 BuildRequires: maven-dependency-plugin
 BuildRequires: maven-install-plugin
@@ -87,6 +87,10 @@ cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
 %doc COPYING
 
 %changelog
+* Wed Feb 06 2013 Java SIG <java-devel@lists.fedoraproject.org> - 13.0-2
+- Update for https://fedoraproject.org/wiki/Fedora_19_Maven_Rebuild
+- Replace maven BuildRequires with maven-local
+
 * Tue Aug  7 2012 Mikolaj Izdebski <mizdebsk@redhat.com> - 13.0-1
 - Update to upstream version 13.0
 - Remove RPM bug workaround
