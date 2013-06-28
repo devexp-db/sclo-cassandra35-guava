@@ -22,7 +22,7 @@ BuildRequires: maven-jar-plugin
 BuildRequires: maven-resources-plugin
 
 BuildRequires: jsr-305 >= 0-0.6.20090319svn
-BuildRequires: ant-nodeps
+BuildRequires: ant
 
 Requires:      jsr-305
 
@@ -87,6 +87,9 @@ cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
 %doc COPYING
 
 %changelog
+* Fri Jun 28 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 13.0-4
+- Replace BR on ant-nodeps with ant
+
 * Fri Jun 28 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 13.0-4
 - Rebuild to regenerate API documentation
 - Resolves: CVE-2013-1571
