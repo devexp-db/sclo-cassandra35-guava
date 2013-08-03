@@ -1,6 +1,6 @@
 Name:          guava
 Version:       13.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       Google Core Libraries for Java
 
 Group:         Development/Libraries
@@ -87,6 +87,9 @@ cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
 %doc COPYING
 
 %changelog
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 13.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Fri Jun 28 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 13.0-4
 - Replace BR on ant-nodeps with ant
 
