@@ -1,9 +1,7 @@
 Name:          guava
 Version:       13.0
-Release:       5%{?dist}
+Release:       6%{?dist}
 Summary:       Google Core Libraries for Java
-
-Group:         Development/Libraries
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
 # git clone https://code.google.com/p/guava-libraries/
@@ -11,23 +9,14 @@ URL:           http://code.google.com/p/guava-libraries
 Source0:       %{name}-%{version}.tar.xz
 
 BuildRequires: java-devel >= 0:1.7.0
-BuildRequires: jpackage-utils
-BuildRequires: sonatype-oss-parent
+BuildRequires: mvn(org.sonatype.oss:oss-parent)
 
 BuildRequires: maven-local
-BuildRequires: maven-compiler-plugin
 BuildRequires: maven-dependency-plugin
-BuildRequires: maven-install-plugin
-BuildRequires: maven-jar-plugin
-BuildRequires: maven-resources-plugin
 
-BuildRequires: jsr-305 >= 0-0.6.20090319svn
+BuildRequires: mvn(com.google.code.findbugs:jsr305) >= 0-0.6.20090319svn
 BuildRequires: ant
 
-Requires:      jsr-305
-
-Requires:      java
-Requires:      jpackage-utils
 BuildArch:     noarch
 
 %description
@@ -39,9 +28,7 @@ into a single jar.  Individual portions of Guava can be used
 by downloading the appropriate module and its dependencies.
 
 %package javadoc
-Group:          Documentation
 Summary:        Javadoc for %{name}
-Requires:       jpackage-utils
 
 %description javadoc
 API documentation for %{name}.
@@ -54,39 +41,28 @@ find . -name '*.jar' -delete
 %pom_disable_module guava-testlib
 %pom_disable_module guava-tests
 %pom_remove_plugin :animal-sniffer-maven-plugin guava
+%pom_remove_plugin :maven-gpg-plugin
 
 %build
 
-mvn-rpmbuild install javadoc:aggregate
+%mvn_file :%{name} %{name}
+%mvn_alias :%{name} "com.google.collections:google-collections"
+%mvn_build
 
 %install
+%mvn_install
 
-# jars
-mkdir -p %{buildroot}%{_javadir}
-install -pm 644 %{name}/target/%{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}.jar
-
-# poms
-mkdir -p %{buildroot}%{_mavenpomdir}
-install -pm 644 pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}-parent.pom
-%add_maven_depmap JPP-%{name}-parent.pom
-install -pm 644 %{name}/pom.xml %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
-%add_maven_depmap JPP-%{name}.pom %{name}.jar -a "com.google.collections:google-collections"
-
-# javadoc
-install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
-cp -rp target/site/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}/
-
-%files
+%files -f .mfiles
 %doc AUTHORS CONTRIBUTORS COPYING README*
-%{_javadir}/%{name}*.jar
-%{_mavenpomdir}/JPP-%{name}*.pom
-%{_mavendepmapfragdir}/%{name}
 
-%files javadoc
-%{_javadocdir}/%{name}
+%files javadoc -f .mfiles-javadoc
 %doc COPYING
 
 %changelog
+* Mon Aug 12 2013 gil cattaneo <puntogil@libero.it> 13.0-6
+- fix rhbz#992456
+- update to current packaging guidelines
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 13.0-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
