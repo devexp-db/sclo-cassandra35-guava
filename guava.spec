@@ -1,6 +1,6 @@
 Name:          guava
-Version:       13.0
-Release:       6%{?dist}
+Version:       15.0
+Release:       1%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
@@ -59,6 +59,9 @@ find . -name '*.jar' -delete
 %doc COPYING
 
 %changelog
+* Wed Jan  8 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 15.0-1
+- Update to upstream version 15.0
+
 * Mon Aug 12 2013 gil cattaneo <puntogil@libero.it> 13.0-6
 - fix rhbz#992456
 - update to current packaging guidelines
