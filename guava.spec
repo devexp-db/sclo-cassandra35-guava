@@ -1,6 +1,6 @@
 Name:          guava
 Version:       15.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
@@ -43,6 +43,8 @@ find . -name '*.jar' -delete
 %pom_remove_plugin :animal-sniffer-maven-plugin guava
 %pom_remove_plugin :maven-gpg-plugin
 
+%pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" guava/pom.xml
+
 %build
 
 %mvn_file :%{name} %{name}
@@ -59,6 +61,9 @@ find . -name '*.jar' -delete
 %doc COPYING
 
 %changelog
+* Tue Jun 17 2014 Roland Grunberg <rgrunber@redhat.com> - 15.0-4
+- Do not generate uses directive for exports.
+
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 15.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
