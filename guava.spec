@@ -1,6 +1,6 @@
 Name:          guava
 Version:       15.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
@@ -59,6 +59,9 @@ find . -name '*.jar' -delete
 %doc COPYING
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 15.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Tue Mar 04 2014 Stanislav Ochotnicky <sochotnicky@redhat.com> - 15.0-2
 - Use Requires: java-headless rebuild (#1067528)
 
