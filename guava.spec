@@ -1,6 +1,6 @@
 Name:          guava
-Version:       15.0
-Release:       4%{?dist}
+Version:       17.0
+Release:       1%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
@@ -9,19 +9,17 @@ URL:           http://code.google.com/p/guava-libraries
 Source0:       %{name}-%{version}.tar.xz
 
 BuildRequires: java-devel >= 0:1.7.0
-BuildRequires: mvn(org.sonatype.oss:oss-parent)
-
 BuildRequires: maven-local
-BuildRequires: maven-dependency-plugin
 
 BuildRequires: mvn(com.google.code.findbugs:jsr305) >= 0-0.6.20090319svn
 BuildRequires: ant
+BuildRequires: apache-ivy
 
 BuildArch:     noarch
 
 %description
-Guava is a suite of core and expanded libraries that include 
-utility classes, Google's collections, io classes, and much 
+Guava is a suite of core and expanded libraries that include
+utility classes, Google’s collections, io classes, and much
 much more.
 This project is a complete packaging of all the Guava libraries
 into a single jar.  Individual portions of Guava can be used
@@ -42,6 +40,7 @@ find . -name '*.jar' -delete
 %pom_disable_module guava-tests
 %pom_remove_plugin :animal-sniffer-maven-plugin guava
 %pom_remove_plugin :maven-gpg-plugin
+%pom_remove_dep jdk:srczip guava
 
 %pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" guava/pom.xml
 
@@ -63,6 +62,9 @@ find . -name '*.jar' -delete
 %changelog
 * Tue Jun 17 2014 Roland Grunberg <rgrunber@redhat.com> - 15.0-4
 - Do not generate uses directive for exports.
+
+* Fri Jun 13 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> 17.0-1
+- Update to latest upstream version (#1109442).
 
 * Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 15.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
