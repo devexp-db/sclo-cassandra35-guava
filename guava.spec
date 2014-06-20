@@ -7,6 +7,7 @@ URL:           http://code.google.com/p/guava-libraries
 # git clone https://code.google.com/p/guava-libraries/
 # (cd ./guava-libraries && git archive --format=tar --prefix=guava-%{version}/ v%{version}) | xz >guava-%{version}.tar.xz
 Source0:       %{name}-%{version}.tar.xz
+Patch0:        %{name}-java8.patch
 
 BuildRequires: java-devel >= 0:1.7.0
 BuildRequires: maven-local
@@ -33,6 +34,7 @@ API documentation for %{name}.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 find . -name '*.jar' -delete
 
 %pom_disable_module guava-gwt
@@ -60,6 +62,9 @@ find . -name '*.jar' -delete
 %doc COPYING
 
 %changelog
+* Fri Jun 20 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 17.0-1
+- Add patch for Java 8
+
 * Tue Jun 17 2014 Roland Grunberg <rgrunber@redhat.com> - 15.0-4
 - Do not generate uses directive for exports.
 
