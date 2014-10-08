@@ -1,6 +1,6 @@
 Name:          guava
 Version:       17.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0 
 URL:           http://code.google.com/p/guava-libraries
@@ -49,7 +49,7 @@ find . -name '*.jar' -delete
 %build
 
 %mvn_file :%{name} %{name}
-%mvn_alias :%{name} "com.google.collections:google-collections"
+%mvn_alias :%{name} com.google.collections:google-collections com.google.guava:guava-jdk5
 %mvn_build
 
 %install
@@ -62,6 +62,9 @@ find . -name '*.jar' -delete
 %doc COPYING
 
 %changelog
+* Wed Oct  8 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 17.0-2
+- Add alias for com.google.guava:guava-jdk5
+
 * Fri Jun 20 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 17.0-1
 - Add patch for Java 8
 
