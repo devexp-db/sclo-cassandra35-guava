@@ -1,12 +1,11 @@
 Name:          guava
-Version:       17.0
-Release:       2%{?dist}
+Version:       18.0
+Release:       1%{?dist}
 Summary:       Google Core Libraries for Java
-License:       ASL 2.0 
-URL:           http://code.google.com/p/guava-libraries
-# git clone https://code.google.com/p/guava-libraries/
-# (cd ./guava-libraries && git archive --format=tar --prefix=guava-%{version}/ v%{version}) | xz >guava-%{version}.tar.xz
-Source0:       %{name}-%{version}.tar.xz
+License:       ASL 2.0
+URL:           https://code.google.com/p/guava-libraries
+
+Source0:       https://github.com/google/guava/archive/v%{version}.tar.gz
 Patch0:        %{name}-java8.patch
 
 BuildRequires: java-devel >= 0:1.7.0
@@ -17,6 +16,9 @@ BuildRequires: ant
 BuildRequires: apache-ivy
 
 BuildArch:     noarch
+
+# Use the same directory of the main package for subpackage licence and docs
+%global _docdir_fmt %{name}
 
 %description
 Guava is a suite of core and expanded libraries that include
@@ -33,7 +35,7 @@ Summary:        Javadoc for %{name}
 API documentation for %{name}.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q
 %patch0 -p1
 find . -name '*.jar' -delete
 
@@ -56,12 +58,17 @@ find . -name '*.jar' -delete
 %mvn_install
 
 %files -f .mfiles
-%doc AUTHORS CONTRIBUTORS COPYING README*
+%doc AUTHORS CONTRIBUTORS README*
+%license COPYING
 
 %files javadoc -f .mfiles-javadoc
-%doc COPYING
+%license COPYING
 
 %changelog
+* Wed Jan  7 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 18.0-1
+- Update to v. 18 (#1175401)
+- Use %license
+
 * Wed Oct  8 2014 Mikolaj Izdebski <mizdebsk@redhat.com> - 17.0-2
 - Add alias for com.google.guava:guava-jdk5
 
