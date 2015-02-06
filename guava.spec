@@ -1,9 +1,9 @@
 Name:          guava
 Version:       18.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0
-URL:           https://code.google.com/p/guava-libraries
+URL:           https://github.com/google/guava
 
 Source0:       https://github.com/google/guava/archive/v%{version}.tar.gz
 Patch0:        %{name}-java8.patch
@@ -65,6 +65,9 @@ find . -name '*.jar' -delete
 %license COPYING
 
 %changelog
+* Fri Feb  6 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-2
+- Update upstream website URL
+
 * Wed Jan  7 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 18.0-1
 - Update to v. 18 (#1175401)
 - Use %license
