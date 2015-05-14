@@ -1,6 +1,6 @@
 Name:          guava
 Version:       18.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0
 URL:           https://github.com/google/guava
@@ -46,6 +46,9 @@ find . -name '*.jar' -delete
 %pom_remove_plugin :maven-gpg-plugin
 %pom_remove_dep jdk:srczip guava
 
+# javadoc generation fails due to strict doclint in JDK 8
+%pom_remove_plugin :maven-javadoc-plugin guava
+
 %pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" guava/pom.xml
 
 %build
@@ -65,6 +68,9 @@ find . -name '*.jar' -delete
 %license COPYING
 
 %changelog
+* Thu May 14 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-3
+- Remove maven-javadoc-plugin execution
+
 * Fri Feb  6 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-2
 - Update upstream website URL
 
