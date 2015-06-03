@@ -1,0 +1,33 @@
+diff -ur guava-18.0.vanilla/guava/src/com/google/common/collect/Maps.java guava-18.0/guava/src/com/google/common/collect/Maps.java
+--- guava-18.0.vanilla/guava/src/com/google/common/collect/Maps.java	2014-08-25 18:39:22.000000000 +0000
++++ guava-18.0/guava/src/com/google/common/collect/Maps.java	2015-06-03 21:02:12.498000000 +0000
+@@ -206,11 +206,15 @@
+       return expectedSize + 1;
+     }
+     if (expectedSize < Ints.MAX_POWER_OF_TWO) {
+-      return expectedSize + expectedSize / 3;
++      // This is the calculation used in JDK8 to resize when a putAll
++      // happens; it seems to be the most conservative calculation we
++      // can make.  0.75 is the default load factor.
++      return (int) ((float) expectedSize / 0.75F + 1.0F);
+     }
+     return Integer.MAX_VALUE; // any large value
+   }
+ 
++
+   /**
+    * Creates a <i>mutable</i> {@code HashMap} instance with the same mappings as
+    * the specified map.
+diff -ur guava-18.0.vanilla/guava-tests/test/com/google/common/collect/MapsTest.java guava-18.0/guava-tests/test/com/google/common/collect/MapsTest.java
+--- guava-18.0.vanilla/guava-tests/test/com/google/common/collect/MapsTest.java	2014-08-25 18:39:22.000000000 +0000
++++ guava-18.0/guava-tests/test/com/google/common/collect/MapsTest.java	2015-06-03 21:04:15.463000000 +0000
+@@ -156,7 +156,8 @@
+     Field tableField = HashMap.class.getDeclaredField("table");
+     tableField.setAccessible(true);
+     Object[] table = (Object[]) tableField.get(hashMap);
+-    return table.length;
++    // In JDK8, table is set lazily, so it may be null.
++    return table == null ? 0 : table.length;
+   }
+ 
+   public void testCapacityForLargeSizes() {

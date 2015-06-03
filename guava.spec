@@ -1,19 +1,24 @@
 Name:          guava
 Version:       18.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0
 URL:           https://github.com/google/guava
 
 Source0:       https://github.com/google/guava/archive/v%{version}.tar.gz
 Patch0:        %{name}-java8.patch
+Patch1:        guava-jdk8-HashMap-testfix.patch
 
 BuildRequires: java-devel >= 0:1.7.0
 BuildRequires: maven-local
+BuildRequires: truth
 
 BuildRequires: mvn(com.google.code.findbugs:jsr305) >= 0-0.6.20090319svn
 BuildRequires: ant
 BuildRequires: apache-ivy
+BuildRequires: easymock
+BuildRequires: mockito
+BuildRequires: mvn(com.google.caliper:caliper) = 1.0.beta.2
 
 BuildArch:     noarch
 
@@ -34,15 +39,20 @@ Summary:        Javadoc for %{name}
 %description javadoc
 API documentation for %{name}.
 
+%package testlib
+Summary:        The guava-testlib subartefact
+
+%description testlib
+guava-testlib provides additional functionality for conveinent unit testing
+
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 find . -name '*.jar' -delete
 
 %pom_disable_module guava-gwt
-%pom_disable_module guava-testlib
-%pom_disable_module guava-tests
-%pom_remove_plugin :animal-sniffer-maven-plugin guava
+%pom_remove_plugin -r :animal-sniffer-maven-plugin 
 %pom_remove_plugin :maven-gpg-plugin
 %pom_remove_dep jdk:srczip guava
 
@@ -55,19 +65,34 @@ find . -name '*.jar' -delete
 
 %mvn_file :%{name} %{name}
 %mvn_alias :%{name} com.google.collections:google-collections com.google.guava:guava-jdk5
-%mvn_build
+%mvn_build -s
 
 %install
 %mvn_install
+# put parent files in guava main package
+cat .mfiles-guava-parent >> .mfiles-guava
 
-%files -f .mfiles
+# remove guava-tests artifacts
+rm %buildroot/usr/share/java/guava/guava-tests.jar
+rm %buildroot/usr/share/maven-metadata/guava-guava-tests.xml
+rm %buildroot/usr/share/maven-poms/guava/guava-tests.pom
+
+%files -f .mfiles-guava
 %doc AUTHORS CONTRIBUTORS README*
 %license COPYING
 
 %files javadoc -f .mfiles-javadoc
 %license COPYING
 
+%files testlib -f .mfiles-guava-testlib
+%license COPYING
+
 %changelog
+* Wed Jun  3 2015 Noa Resare <noa@resare.com> - 18.0-4
+- enable module guava-testlib
+- enable tests in guava-testlib
+- backport fix to HashMap related test from 19.0-SNAPSHOT
+
 * Thu May 14 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-3
 - Remove maven-javadoc-plugin execution
 
