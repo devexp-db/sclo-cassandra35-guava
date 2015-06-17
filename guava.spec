@@ -1,6 +1,6 @@
 Name:          guava
 Version:       18.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0
 URL:           https://github.com/google/guava
@@ -68,6 +68,9 @@ find . -name '*.jar' -delete
 %license COPYING
 
 %changelog
+* Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 18.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Thu May 14 2015 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-3
 - Remove maven-javadoc-plugin execution
 
