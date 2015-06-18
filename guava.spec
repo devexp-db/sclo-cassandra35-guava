@@ -18,7 +18,6 @@ BuildRequires: ant
 BuildRequires: apache-ivy
 BuildRequires: easymock
 BuildRequires: mockito
-BuildRequires: mvn(com.google.caliper:caliper) = 1.0.beta.2
 
 BuildArch:     noarch
 
@@ -55,9 +54,12 @@ find . -name '*.jar' -delete
 %pom_remove_plugin -r :animal-sniffer-maven-plugin 
 %pom_remove_plugin :maven-gpg-plugin
 %pom_remove_dep jdk:srczip guava
+%pom_remove_dep :caliper guava-tests
+%mvn_package :guava-parent guava
+%mvn_package :guava-tests __noinstall
 
-# javadoc generation fails due to strict doclint in JDK 8
-%pom_remove_plugin :maven-javadoc-plugin guava
+# javadoc generation fails due to strict doclint in JDK 1.8.0_45
+%pom_remove_plugin -r :maven-javadoc-plugin
 
 %pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" guava/pom.xml
 
@@ -69,13 +71,6 @@ find . -name '*.jar' -delete
 
 %install
 %mvn_install
-# put parent files in guava main package
-cat .mfiles-guava-parent >> .mfiles-guava
-
-# remove guava-tests artifacts
-rm %buildroot/usr/share/java/guava/guava-tests.jar
-rm %buildroot/usr/share/maven-metadata/guava-guava-tests.xml
-rm %buildroot/usr/share/maven-poms/guava/guava-tests.pom
 
 %files -f .mfiles-guava
 %doc AUTHORS CONTRIBUTORS README*
@@ -85,7 +80,6 @@ rm %buildroot/usr/share/maven-poms/guava/guava-tests.pom
 %license COPYING
 
 %files testlib -f .mfiles-guava-testlib
-%license COPYING
 
 %changelog
 * Wed Jun  3 2015 Noa Resare <noa@resare.com> - 18.0-4
