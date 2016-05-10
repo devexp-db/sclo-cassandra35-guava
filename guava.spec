@@ -67,7 +67,9 @@ find . -name '*.jar' -delete
 
 %mvn_file :%{name} %{name}
 %mvn_alias :%{name} com.google.collections:google-collections com.google.guava:guava-jdk5
-%mvn_build -s
+# Tests fail on Koji due to insufficient memory,
+# see https://bugzilla.redhat.com/show_bug.cgi?id=1332971
+%mvn_build -s -f
 
 %install
 %mvn_install
