@@ -1,6 +1,6 @@
 Name:          guava
 Version:       18.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 Summary:       Google Core Libraries for Java
 License:       ASL 2.0
 URL:           https://github.com/google/guava
@@ -84,6 +84,9 @@ find . -name '*.jar' -delete
 %files testlib -f .mfiles-guava-testlib
 
 %changelog
+* Tue May 10 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-7
+- Disable tests due to insufficient memory on Koji
+
 * Wed Feb 03 2016 Fedora Release Engineering <releng@fedoraproject.org> - 18.0-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
