@@ -1,28 +1,23 @@
-Name:          guava
-Version:       18.0
-Release:       7%{?dist}
-Summary:       Google Core Libraries for Java
-License:       ASL 2.0
-URL:           https://github.com/google/guava
+Name:           guava
+Version:        18.0
+Release:        8%{?dist}
+Summary:        Google Core Libraries for Java
+License:        ASL 2.0
+URL:            https://github.com/google/guava
+BuildArch:      noarch
 
-Source0:       https://github.com/google/guava/archive/v%{version}.tar.gz
-Patch0:        %{name}-java8.patch
-Patch1:        guava-jdk8-HashMap-testfix.patch
+Source0:        https://github.com/google/guava/archive/v%{version}.tar.gz
 
-BuildRequires: java-devel >= 0:1.7.0
-BuildRequires: maven-local
-BuildRequires: truth
+Patch0:         %{name}-java8.patch
+Patch1:         guava-jdk8-HashMap-testfix.patch
 
-BuildRequires: mvn(com.google.code.findbugs:jsr305) >= 0-0.6.20090319svn
-BuildRequires: ant
-BuildRequires: apache-ivy
-BuildRequires: easymock
-BuildRequires: mockito
-
-BuildArch:     noarch
-
-# Use the same directory of the main package for subpackage licence and docs
-%global _docdir_fmt %{name}
+BuildRequires:  maven-local
+BuildRequires:  mvn(com.google.code.findbugs:jsr305)
+BuildRequires:  mvn(com.google.guava:guava)
+BuildRequires:  mvn(com.google.truth:truth)
+BuildRequires:  mvn(junit:junit)
+BuildRequires:  mvn(org.apache.felix:maven-bundle-plugin)
+BuildRequires:  mvn(org.sonatype.oss:oss-parent:pom:)
 
 %description
 Guava is a suite of core and expanded libraries that include
@@ -84,6 +79,9 @@ find . -name '*.jar' -delete
 %files testlib -f .mfiles-guava-testlib
 
 %changelog
+* Thu Jun 16 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-8
+- Cleanup package
+
 * Tue May 10 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-7
 - Disable tests due to insufficient memory on Koji
 
