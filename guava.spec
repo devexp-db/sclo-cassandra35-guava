@@ -1,6 +1,10 @@
+%if 0%{?fedora}
+%bcond_without testlib
+%endif
+
 Name:           guava
 Version:        18.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Google Core Libraries for Java
 License:        ASL 2.0
 URL:            https://github.com/google/guava
@@ -13,11 +17,12 @@ Patch1:         guava-jdk8-HashMap-testfix.patch
 
 BuildRequires:  maven-local
 BuildRequires:  mvn(com.google.code.findbugs:jsr305)
-BuildRequires:  mvn(com.google.guava:guava)
-BuildRequires:  mvn(com.google.truth:truth)
-BuildRequires:  mvn(junit:junit)
 BuildRequires:  mvn(org.apache.felix:maven-bundle-plugin)
 BuildRequires:  mvn(org.sonatype.oss:oss-parent:pom:)
+%if %{with testlib}
+BuildRequires:  mvn(com.google.truth:truth)
+BuildRequires:  mvn(junit:junit)
+%endif
 
 %description
 Guava is a suite of core and expanded libraries that include
@@ -33,11 +38,13 @@ Summary:        Javadoc for %{name}
 %description javadoc
 API documentation for %{name}.
 
+%if %{with testlib}
 %package testlib
 Summary:        The guava-testlib subartefact
 
 %description testlib
 guava-testlib provides additional functionality for conveinent unit testing
+%endif
 
 %prep
 %setup -q
@@ -46,6 +53,9 @@ guava-testlib provides additional functionality for conveinent unit testing
 find . -name '*.jar' -delete
 
 %pom_disable_module guava-gwt
+%if %{without testlib}
+%pom_disable_module guava-testlib
+%endif
 %pom_remove_plugin -r :animal-sniffer-maven-plugin 
 %pom_remove_plugin :maven-gpg-plugin
 %pom_remove_dep jdk:srczip guava
@@ -76,9 +86,14 @@ find . -name '*.jar' -delete
 %files javadoc -f .mfiles-javadoc
 %license COPYING
 
+%if %{with testlib}
 %files testlib -f .mfiles-guava-testlib
+%endif
 
 %changelog
+* Mon Oct 10 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-9
+- Allow conditional builds without testlib
+
 * Thu Jun 16 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-8
 - Cleanup package
 
