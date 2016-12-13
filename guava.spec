@@ -1,28 +1,37 @@
+%{?scl:%scl_package guava}
+%{!?scl:%global pkg_name %{name}}
+
 %if 0%{?fedora}
 %bcond_without testlib
 %endif
 
-Name:           guava
-Version:        18.0
-Release:        9%{?dist}
-Summary:        Google Core Libraries for Java
-License:        ASL 2.0
-URL:            https://github.com/google/guava
-BuildArch:      noarch
+Name:		%{?scl_prefix}guava
+Version:	18.0
+Release:	10%{?dist}
+Summary:	Google Core Libraries for Java
+License:	ASL 2.0
+URL:		https://github.com/google/guava
+Source0:	https://github.com/google/%{pkg_name}/archive/v%{version}.tar.gz
 
-Source0:        https://github.com/google/guava/archive/v%{version}.tar.gz
+Patch0:		%{pkg_name}-java8.patch
+Patch1:		%{pkg_name}-jdk8-HashMap-testfix.patch
 
-Patch0:         %{name}-java8.patch
-Patch1:         guava-jdk8-HashMap-testfix.patch
+BuildArch:	noarch
 
-BuildRequires:  maven-local
-BuildRequires:  mvn(com.google.code.findbugs:jsr305)
-BuildRequires:  mvn(org.apache.felix:maven-bundle-plugin)
-BuildRequires:  mvn(org.sonatype.oss:oss-parent:pom:)
+# TODO not a good practice only temporary until other solution found
+%{?scl:
+BuildRequires:  java-1.8.0-openjdk-devel
+Requires:       java-1.8.0-openjdk-devel
+}
+BuildRequires:	%{?scl_prefix_maven}maven-local
+BuildRequires:	%{?scl_prefix_maven}jsr-305
+BuildRequires:	%{?scl_prefix_maven}maven-plugin-bundle
+BuildRequires:	%{?scl_prefix_maven}sonatype-oss-parent
 %if %{with testlib}
-BuildRequires:  mvn(com.google.truth:truth)
-BuildRequires:  mvn(junit:junit)
+BuildRequires:	mvn(com.google.truth:truth)
+BuildRequires:	mvn(junit:junit)
 %endif
+%{?scl:Requires: %scl_runtime}
 
 %description
 Guava is a suite of core and expanded libraries that include
@@ -33,53 +42,58 @@ into a single jar.  Individual portions of Guava can be used
 by downloading the appropriate module and its dependencies.
 
 %package javadoc
-Summary:        Javadoc for %{name}
+Summary:	Javadoc for %{name}
 
 %description javadoc
 API documentation for %{name}.
 
 %if %{with testlib}
 %package testlib
-Summary:        The guava-testlib subartefact
+Summary:	The %{pkg_name}-testlib subartefact
 
 %description testlib
-guava-testlib provides additional functionality for conveinent unit testing
+%{pkg_name}-testlib provides additional functionality for conveinent unit testing
 %endif
 
 %prep
-%setup -q
+%setup -q -n %{pkg_name}-%{version}
 %patch0 -p1
 %patch1 -p1
 find . -name '*.jar' -delete
 
-%pom_disable_module guava-gwt
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
+%pom_disable_module %{pkg_name}-gwt
 %if %{without testlib}
-%pom_disable_module guava-testlib
+%pom_disable_module %{pkg_name}-testlib
 %endif
 %pom_remove_plugin -r :animal-sniffer-maven-plugin 
 %pom_remove_plugin :maven-gpg-plugin
-%pom_remove_dep jdk:srczip guava
-%pom_remove_dep :caliper guava-tests
-%mvn_package :guava-parent guava
-%mvn_package :guava-tests __noinstall
+%pom_remove_dep jdk:srczip %{pkg_name}
+%pom_remove_dep :caliper %{pkg_name}-tests
+%mvn_package :%{pkg_name}-parent %{pkg_name}
+%mvn_package :%{pkg_name}-tests __noinstall
 
 # javadoc generation fails due to strict doclint in JDK 1.8.0_45
 %pom_remove_plugin -r :maven-javadoc-plugin
 
-%pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" guava/pom.xml
+%pom_xpath_inject /pom:project/pom:build/pom:plugins/pom:plugin/pom:configuration/pom:instructions "<_nouses>true</_nouses>" %{pkg_name}/pom.xml
+%{?scl:EOF}
 
 %build
-
-%mvn_file :%{name} %{name}
-%mvn_alias :%{name} com.google.collections:google-collections com.google.guava:guava-jdk5
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
+%mvn_file :%{pkg_name} %{pkg_name}
+%mvn_alias :%{pkg_name} com.google.collections:google-collections com.google.%{pkg_name}:%{pkg_name}-jdk5
 # Tests fail on Koji due to insufficient memory,
 # see https://bugzilla.redhat.com/show_bug.cgi?id=1332971
 %mvn_build -s -f
+%{?scl:EOF}
 
 %install
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_install
+%{?scl:EOF}
 
-%files -f .mfiles-guava
+%files -f .mfiles-%{pkg_name}
 %doc AUTHORS CONTRIBUTORS README*
 %license COPYING
 
@@ -87,10 +101,13 @@ find . -name '*.jar' -delete
 %license COPYING
 
 %if %{with testlib}
-%files testlib -f .mfiles-guava-testlib
+%files testlib -f .mfiles-%{pkg_name}-testlib
 %endif
 
 %changelog
+* Mon Dec 12 2016 Tomas Repik <trepik@redhat.com> - 18.0-10
+- scl conversion
+
 * Mon Oct 10 2016 Mikolaj Izdebski <mizdebsk@redhat.com> - 18.0-9
 - Allow conditional builds without testlib
 
